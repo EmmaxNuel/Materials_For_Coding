@@ -1,0 +1,785 @@
+Here are realistic Python Developer interview questions and strong sample answers based on the exact areas micro1 said you should improve.
+
+---
+
+# Python + DSA Interview Q&A
+
+---
+
+## 1. What is the difference between Linear Search and Binary Search?
+
+### Answer
+
+Linear Search checks each element one by one until the target is found.
+
+Binary Search works only on sorted arrays. It repeatedly divides the search space in half.
+
+### Complexity
+
+| Algorithm     | Best | Worst    |
+| ------------- | ---- | -------- |
+| Linear Search | O(1) | O(n)     |
+| Binary Search | O(1) | O(log n) |
+
+### Example
+
+```python
+# Linear Search
+def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1
+```
+
+```python
+# Binary Search
+def binary_search(arr, target):
+    left = 0
+    right = len(arr) - 1
+
+    while left <= right:
+        mid = (left + right) // 2
+
+        if arr[mid] == target:
+            return mid
+
+        elif arr[mid] < target:
+            left = mid + 1
+
+        else:
+            right = mid - 1
+
+    return -1
+```
+
+---
+
+## 2. What is a Hash Table?
+
+### Answer
+
+A hash table stores key-value pairs using a hash function.
+
+Python dictionaries are implemented using hash tables.
+
+### Time Complexity
+
+| Operation | Average Complexity |
+| --------- | ------------------ |
+| Insert    | O(1)               |
+| Search    | O(1)               |
+| Delete    | O(1)               |
+
+Worst case can become O(n) because of collisions.
+
+### Example
+
+```python
+student = {
+    "name": "John",
+    "age": 20
+}
+
+print(student["name"])
+```
+
+---
+
+## 3. Explain List vs Tuple in Python
+
+### Answer
+
+| List        | Tuple       |
+| ----------- | ----------- |
+| Mutable     | Immutable   |
+| Uses []     | Uses ()     |
+| Slower      | Faster      |
+| More memory | Less memory |
+
+### Example
+
+```python
+my_list = [1, 2, 3]
+my_list.append(4)
+
+my_tuple = (1, 2, 3)
+```
+
+Tuples are useful when data should not change.
+
+---
+
+# Docker + Kubernetes Interview Q&A
+
+---
+
+## 4. What are Dockerfile best practices?
+
+### Answer
+
+Some important best practices are:
+
+1. Use small base images
+2. Minimize layers
+3. Use `.dockerignore`
+4. Avoid storing secrets in Dockerfiles
+5. Use multi-stage builds
+6. Pin dependency versions
+
+### Example
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "main.py"]
+```
+
+---
+
+## 5. What is Multi-Stage Build in Docker?
+
+### Answer
+
+A multi-stage build reduces image size by separating build dependencies from runtime dependencies.
+
+### Example
+
+```dockerfile
+# Build stage
+FROM python:3.11 AS builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Runtime stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
+
+COPY . .
+
+CMD ["python", "main.py"]
+```
+
+---
+
+## 6. How do Kubernetes Rollbacks work?
+
+### Answer
+
+Kubernetes allows reverting to a previous deployment version if a new deployment fails.
+
+### Commands
+
+```bash
+kubectl rollout history deployment/myapp
+```
+
+```bash
+kubectl rollout undo deployment/myapp
+```
+
+This helps maintain application stability during failed deployments.
+
+---
+
+## 7. What is Rolling Update in Kubernetes?
+
+### Answer
+
+A rolling update gradually replaces old pods with new ones without downtime.
+
+Benefits:
+
+* Zero downtime
+* Safer deployments
+* Easy rollback
+
+---
+
+## 8. How should secrets be managed in Kubernetes?
+
+### Answer
+
+Sensitive information should not be hardcoded.
+
+Use:
+
+* Kubernetes Secrets
+* Environment variables
+* Secret managers like Vault or AWS Secrets Manager
+
+### Example
+
+```bash
+kubectl create secret generic db-secret \
+--from-literal=password=mysecret
+```
+
+---
+
+# Coding Logic Questions
+
+---
+
+## 9. Find the Longest Streak of Consecutive Numbers
+
+### Question
+
+Given:
+
+```python
+arr = [1,1,0,1,1,1]
+```
+
+Find the longest streak of `1`s.
+
+### Answer
+
+```python
+def longest_streak(arr):
+    max_count = 0
+    current = 0
+
+    for num in arr:
+        if num == 1:
+            current += 1
+            max_count = max(max_count, current)
+        else:
+            current = 0
+
+    return max_count
+
+print(longest_streak([1,1,0,1,1,1]))
+```
+
+Output:
+
+```python
+3
+```
+
+---
+
+## 10. Handle Edge Cases in Coding Interviews
+
+### Answer
+
+When solving problems, always think about:
+
+* Empty input
+* Duplicate values
+* Negative numbers
+* Large inputs
+* Single-element arrays
+
+### Example
+
+```python
+def find_max(arr):
+    if not arr:
+        return None
+
+    return max(arr)
+```
+
+---
+
+# FastAPI Interview Questions
+
+---
+
+## 11. Why use FastAPI?
+
+### Answer
+
+Advantages:
+
+* Very fast
+* Automatic API docs
+* Async support
+* Type validation using Pydantic
+* Easy to build REST APIs
+
+---
+
+## 12. What is Dependency Injection in FastAPI?
+
+### Answer
+
+Dependency Injection allows reusable logic like authentication or database connections.
+
+### Example
+
+```python
+from fastapi import Depends, FastAPI
+
+app = FastAPI()
+
+def get_db():
+    return "database"
+
+@app.get("/")
+def home(db = Depends(get_db)):
+    return {"db": db}
+```
+
+---
+
+## 13. Explain Async in FastAPI
+
+### Answer
+
+Async allows handling multiple requests concurrently without blocking.
+
+### Example
+
+```python
+@app.get("/")
+async def home():
+    return {"message": "Hello"}
+```
+
+Useful for:
+
+* APIs
+* Database calls
+* External requests
+
+---
+
+# CI/CD Questions
+
+---
+
+## 14. Difference Between CI and CD
+
+### Answer
+
+| CI                       | CD                             |
+| ------------------------ | ------------------------------ |
+| Continuous Integration   | Continuous Delivery/Deployment |
+| Automatically tests code | Automatically releases code    |
+| Detects bugs early       | Automates deployment           |
+
+### CI/CD Flow
+
+1. Developer pushes code
+2. Tests run automatically
+3. Docker image builds
+4. Deployment happens
+
+---
+
+## 15. What is GitHub Actions?
+
+### Answer
+
+GitHub Actions is a CI/CD tool used to automate workflows.
+
+### Example Workflow
+
+```yaml
+name: Python App
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
+```
+
+---
+
+# Machine Learning Data Questions
+
+---
+
+## 16. How do you handle missing data?
+
+### Answer
+
+Common methods:
+
+* Remove rows
+* Fill with mean/median
+* Forward fill
+* Use ML imputation
+
+### Example
+
+```python
+df.fillna(df.mean(), inplace=True)
+```
+
+---
+
+## 17. What are Outliers?
+
+### Answer
+
+Outliers are abnormal values that differ significantly from other data.
+
+Detection methods:
+
+* IQR
+* Z-score
+* Visualization
+
+Outliers can negatively affect ML models.
+
+---
+
+# Strong Final Interview Question
+
+---
+
+## 18. Tell me about a project you built
+
+### Sample Answer
+
+“I built a Bucket List API using FastAPI with PostgreSQL and SQLAlchemy. I structured the project using routers, services, and models to keep the code modular. I implemented JWT authentication, CRUD operations, validation using Pydantic, and Dockerized the application for deployment. I also used GitHub Actions for automated testing and deployment.”
+
+---
+
+# How To Practice Before Retake
+
+Focus heavily on:
+
+1. DSA basics
+
+   * Arrays
+   * Dictionaries
+   * Searching
+   * Sorting
+   * Time complexity
+
+2. FastAPI
+
+   * Dependency Injection
+   * Authentication
+   * Async
+   * SQLAlchemy
+
+3. Docker + Kubernetes
+
+   * Dockerfile optimization
+   * Rollbacks
+   * Secrets
+   * Deployments
+
+4. Coding questions
+
+   * LeetCode Easy
+   * Edge cases
+   * Writing runnable code
+
+5. Explain your thought process clearly while coding.
+
+Yes — those are more like mid-level interview questions.
+
+For micro1, they usually start with smaller questions first, then move into deeper ones.
+
+These are the kinds of “smaller” questions they can ask:
+
+---
+
+# Small Python Questions
+
+## 1. What is the difference between `==` and `is`?
+
+### Answer
+
+* `==` compares values
+* `is` compares memory locations
+
+```python
+a = [1,2]
+b = [1,2]
+
+print(a == b)  # True
+print(a is b)  # False
+```
+
+---
+
+## 2. What is a Python dictionary?
+
+### Answer
+
+A dictionary stores data in key-value pairs.
+
+```python
+student = {
+    "name": "John",
+    "age": 20
+}
+```
+
+---
+
+## 3. What is the difference between list and set?
+
+### Answer
+
+| List              | Set           |
+| ----------------- | ------------- |
+| Ordered           | Unordered     |
+| Allows duplicates | No duplicates |
+
+```python
+nums = [1,1,2]
+unique = {1,1,2}
+```
+
+---
+
+## 4. What does `len()` do?
+
+### Answer
+
+It returns the number of items.
+
+```python
+names = ["a", "b", "c"]
+print(len(names))
+```
+
+---
+
+## 5. What is exception handling?
+
+### Answer
+
+It prevents program crashes using `try` and `except`.
+
+```python
+try:
+    print(10 / 0)
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+```
+
+---
+
+# Small DSA Questions
+
+---
+
+## 6. What is an array?
+
+### Answer
+
+An array stores multiple values in one variable.
+
+```python
+arr = [1,2,3]
+```
+
+---
+
+## 7. What is the time complexity of searching in a list?
+
+### Answer
+
+Linear search is:
+
+O(n)
+
+because we may check every element.
+
+---
+
+## 8. What is a stack?
+
+### Answer
+
+A stack follows LIFO:
+Last In First Out.
+
+Example:
+
+* Plates stacked together
+
+Methods:
+
+* push
+* pop
+
+---
+
+## 9. What is a queue?
+
+### Answer
+
+Queue follows FIFO:
+First In First Out.
+
+Example:
+
+* People standing in line.
+
+---
+
+# Small FastAPI Questions
+
+---
+
+## 10. What is FastAPI?
+
+### Answer
+
+FastAPI is a Python framework used for building APIs quickly.
+
+---
+
+## 11. What is an API?
+
+### Answer
+
+API allows applications to communicate with each other.
+
+---
+
+## 12. What does `@app.get()` mean?
+
+### Answer
+
+It defines a GET endpoint.
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "Hello"}
+```
+
+---
+
+# Small Docker Questions
+
+---
+
+## 13. What is Docker?
+
+### Answer
+
+Docker is a tool used to package applications into containers.
+
+---
+
+## 14. What is a container?
+
+### Answer
+
+A container is a lightweight environment that contains:
+
+* application code
+* dependencies
+* runtime
+
+---
+
+## 15. What does `docker build` do?
+
+### Answer
+
+It creates a Docker image from a Dockerfile.
+
+---
+
+# Small CI/CD Questions
+
+---
+
+## 16. What is CI/CD?
+
+### Answer
+
+* CI → Continuous Integration
+* CD → Continuous Deployment/Delivery
+
+Used for automating testing and deployment.
+
+---
+
+# Small SQL Questions
+
+---
+
+## 17. What is a primary key?
+
+### Answer
+
+A primary key uniquely identifies each row.
+
+---
+
+## 18. Difference between `DELETE` and `DROP`
+
+### Answer
+
+| DELETE        | DROP          |
+| ------------- | ------------- |
+| Removes rows  | Removes table |
+| Table remains | Table deleted |
+
+---
+
+# Small Logic Questions
+
+---
+
+## 19. Reverse a string
+
+```python
+def reverse_string(s):
+    return s[::-1]
+```
+
+---
+
+## 20. Find largest number
+
+```python
+def largest(arr):
+    return max(arr)
+```
+
+---
+
+For micro1 interviews, they often care about:
+
+* Clear explanation
+* Confidence
+* Correct basics
+* Thinking process
+
+Not only “hard” questions.
+
+
